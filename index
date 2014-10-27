@@ -1,0 +1,601 @@
+<html>
+	
+	<head>
+		<title>DROMEDAR</title>
+		<link href="http://www.alexanderscharnhorst.de" id="bla">
+		<link href="http://www.threejs.org" id="blubb">
+		<meta charset="utf-8">
+		<style>canvas { width: 100%; height: 100% }</style>
+		
+	</head>
+	
+	<body>
+		
+		<!--Connect to libraries-->
+		
+		<script src="js/three.min.js"></script>
+		<script src="js/OrbitControls.js"></script>
+		<script src="js/KeyboardState.js"></script>
+		<script type='text/javascript' src="js/dat.gui.min.js"></script>
+		<script src="js/THREEx.FullScreen.js"></script>
+		
+		<script>
+		
+
+			
+
+		//Global Variables
+	
+	var scene, camera, renderer, controls;
+	var clock = new THREE.Clock();
+	var keyboard = new KeyboardState();
+	var interactive;
+	var projector, mouse = { x: 0, y: 0 }, INTERSECTED;
+	
+	
+	
+	
+	
+	
+	
+	init();
+	animate();
+
+		
+	function init(){	
+		
+		
+		//Scene=========================================================
+	
+	
+	scene = new THREE.Scene();
+
+	
+		
+		//Camera=========================================================
+		
+	camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000.0 ); 
+		
+	camera.position.z = 5;		
+	camera.position.y = 5;
+	camera.position.x = 1;
+	camera.rotation.x = .75;
+	camera.rotation.z = .75;
+	
+
+		//Renderer=========================================================
+		
+	renderer = new THREE.WebGLRenderer({antialias:true});
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	document.body.appendChild( renderer.domElement );
+	
+	
+		// EVENTS=========================================================
+	
+	window.addEventListener('resize', function() {
+	var WIDTH = window.innerWidth,
+	HEIGHT = window.innerHeight;
+	renderer.setSize(WIDTH, HEIGHT);
+	camera.aspect = WIDTH / HEIGHT;
+	camera.updateProjectionMatrix();
+	});
+	
+	THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
+	
+		// OrbitControls=========================================================
+     
+	controls = new THREE.OrbitControls(camera, renderer.domElement);
+	
+		
+		//Set Point Light=========================================================
+	
+	var pointColor = "#ccffcc";
+	var pointLight = new THREE.PointLight (pointColor);
+	pointLight.position.x = 500;
+	pointLight.position.y = 500;
+	pointLight.position.z = 500;
+	//pointLight.rotation.z = .75;
+	scene.add(pointLight);
+	pointLight.intensity = 0.5;
+		
+	
+		//Set Ambient Light=========================================================
+	
+	/*var ambientLight = new THREE.AmbientLight (0x404040);
+	scene.add(ambientLight);
+	ambientLight.intensity = 100;*/
+	
+	
+		// EnableShadowMap=========================================================
+	
+	renderer.shadowMapEnabled = true;
+	 
+	 
+		//Spotlight for the shadows=========================================================
+        
+	var spotLight = new THREE.SpotLight(0xffffff);
+	spotLight.position.set(-60, 120, 100);
+	spotLight.shadowCameraVisible = false;
+	spotLight.shadowDarkness = 0.95;
+	spotLight.intensity = 0.5;
+	spotLight.castShadow = true;
+	scene.add(spotLight);
+		
+		
+		
+		// Set the background color of the scene=========================================================
+		
+	renderer.setClearColorHex(0x333F47, 1);
+		
+	
+	
+	
+		
+		
+		//Geometry=========================================================
+				
+		//var geometry = new THREE.BoxGeometry(1,1,1);
+		//var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+		//var cube = new THREE.Mesh( geometry, material );
+		//scene.add( cube ); 
+		
+		
+		
+		
+	//CUBE1 -- WIREFRAME
+		
+		geometry = new THREE.BoxGeometry( 5, 5, 5);
+		material = new THREE.MeshBasicMaterial
+					( { color: 0x000000, wireframe: true, wireframeLinewidth: 1} );	
+		
+		cube1 = new THREE.Mesh (geometry, material);
+		cube1.castShadow = true;
+		cube1.receiveShadow = true;
+		scene.add (cube1);
+		
+		cube1.position.x = -10;
+	
+	
+	//CUBE2 -- Mesh   BASIC    Material
+		
+		geometry = new THREE.BoxGeometry( 5, 5, 5);
+		material = new THREE.MeshBasicMaterial
+					( { color: 0x00FFFF} );	
+		
+		cube2 = new THREE.Mesh (geometry, material);
+		cube2.castShadow = true;
+		cube2.receiveShadow = true;
+		scene.add (cube2);
+		
+		cube2.position.x = -20;
+	
+	
+	//CUBE3 -- Mesh   NORMAL   Material
+		
+		geometry = new THREE.BoxGeometry( 5, 5, 5);
+		material = new THREE.MeshNormalMaterial
+					( { color: 0xDCDCDC} );	
+		
+		cube3 = new THREE.Mesh (geometry, material);
+		cube3.castShadow = true;
+		cube3.receiveShadow = true;
+		scene.add (cube3);
+		
+		cube3.position.x = -30;
+		
+	
+	//CUBE4 -- Mesh   DEPTH    Material
+		
+		geometry = new THREE.BoxGeometry( 5, 5, 5);
+		material = new THREE.MeshDepthMaterial
+					( { color: 0x00FF00} );	
+		
+		cube4 = new THREE.Mesh (geometry, material);
+		cube4.castShadow = true;
+		cube4.receiveShadow = true;
+		scene.add (cube4);
+		
+		cube4.position.x = -40;
+	
+	
+	//CUBE4a -- Mesh   DEPTH    Material
+		
+		geometry = new THREE.BoxGeometry( 5, 5, 5);
+		material = new THREE.MeshDepthMaterial
+					( { color: 0x00FF00} );	
+		
+		cube4a = new THREE.Mesh (geometry, material);
+		cube4a.castShadow = true;
+		cube4a.receiveShadow = true;
+		scene.add (cube4a);
+		
+		cube4a.position.x = -40;
+		cube4a.position.z = -10;
+		
+	
+	//CUBE4b -- Mesh   DEPTH    Material
+		
+		geometry = new THREE.BoxGeometry( 5, 5, 5);
+		material = new THREE.MeshDepthMaterial
+					( { color: 0x00FF00} );	
+		
+		cube4b = new THREE.Mesh (geometry, material);
+		cube4b.castShadow = true;
+		cube4b.receiveShadow = true;
+		
+		scene.add (cube4b);
+	
+		cube4b.position.x = -40;
+		cube4b.position.z = 10;
+	
+	
+	
+	//CUBE5 -- Mesh   LAMBERT   Material
+		
+		geometry = new THREE.BoxGeometry( 5, 5, 5);
+		material = new THREE.MeshLambertMaterial
+					( { color: 0xFFA500} );	
+		
+		cube5 = new THREE.Mesh (geometry, material);
+		cube5.castShadow = true;
+		cube5.receiveShadow = true;
+		scene.add (cube5);
+		
+		cube5.position.x = -50;
+
+	
+	//CUBE6 -- Mesh   PHONG   Material
+		
+		geometry = new THREE.BoxGeometry( 5, 5, 5);
+		material = new THREE.MeshPhongMaterial
+					( { ambient: 0xffffff, color: 0xff000e, specular: 0xffffff, shininess: 143} );	
+		
+		cube6 = new THREE.Mesh (geometry, material);
+		cube6.castShadow = true;
+		cube6.receiveShadow = true;
+		scene.add (cube6);
+		
+		cube6.position.x = -60;
+
+	
+	//CUBE7 -- Mesh   FACE   Material
+		
+		geometry = new THREE.BoxGeometry( 5, 5, 5);
+		material = new THREE.MeshBasicMaterial
+					( { color: 0x000000} );	
+		
+		cube7 = new THREE.Mesh (geometry, material);
+		cube7.castShadow = true;
+		cube7.receiveShadow = true;
+		scene.add (cube7);
+		
+		cube7.position.x = -70;
+		
+	
+	//Cube8 BUMPMAP
+		
+		geometry = new THREE.BoxGeometry( 5, 5, 5);
+		texture = THREE.ImageUtils.loadTexture ('images/BrickOldRounded0244_1_S.jpg');
+		bump = THREE.ImageUtils.loadTexture ('images/BrickOldRounded0244_1_S_bump.jpg');
+		material = new THREE.MeshPhongMaterial ( { map: texture, bumpMap: bump, bumpScale: 0.3} );
+		cube8 = new THREE.Mesh ( geometry, material );
+		cube8.castShadow = true;
+		cube8.receiveShadow = true;
+		scene.add (cube8);
+		
+		cube8.position.x = 10;
+		
+	
+	//Sphere1 TEXTURE
+		
+		geometry = new THREE.SphereGeometry(3.5,32,16);
+		texture = THREE.ImageUtils.loadTexture ('images/BrickOldRounded0244_1_S.jpg');
+		material = new THREE.MeshPhongMaterial ( { map: texture } );
+		sphere1 = new THREE.Mesh ( geometry, material );
+		sphere1.castShadow = true;
+		sphere1.receiveShadow = true;
+		scene.add (sphere1);
+		
+		sphere1.position.x = 20;
+		
+	
+	//Sphere2 BUMPMAP
+		
+		geometry = new THREE.SphereGeometry(3.5,32,16);
+		texture = THREE.ImageUtils.loadTexture ('images/BrickOldRounded0244_1_S.jpg');
+		material = new THREE.MeshPhongMaterial ( { map: texture, bumpMap: texture, bumpScale: 1  } );
+		sphere2 = new THREE.Mesh ( geometry, material );
+		sphere2.castShadow = true;
+		sphere2.receiveShadow = true;
+		scene.add (sphere2);
+		
+		sphere2.position.x = 30;
+
+	//PLANE=========================================================
+		
+		geometry = new THREE.PlaneGeometry 
+		(1500, 1500, widthSegments = 1, heightSegments = 1)
+		
+		material = new THREE.MeshLambertMaterial
+					( { color: "#6699FF" ,  side: THREE.DoubleSide  });
+		
+		plane = new THREE.Mesh (geometry, material);
+		
+		plane.position.y = -10;
+		plane.rotation.x = Math.PI / 2;
+		plane.receiveShadow = true;
+		scene.add (plane);	
+	
+	
+	
+	
+		
+		
+		//Load geometry separately=========================================================
+	
+	
+		//Select Cube as interactive=============================================
+	
+	interactive = new THREE.Object3D();
+	scene.add(interactive);
+	
+	var loader = new THREE.JSONLoader();
+	
+	loader.load( "models/cube.js", function(geometry){
+	var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+    greenCube = new THREE.Mesh(geometry, material);
+    greenCube.castShadow = true;
+	greenCube.receiveShadow = true;
+	interactive.add(greenCube);	
+	
+    });
+	
+	loader.load( "models/sphere.js", function(geometry){
+	var material = new THREE.MeshBasicMaterial( { color: 0xCC0000 } );
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.castShadow = true;
+	mesh.receiveShadow = true;
+	
+	scene.add(mesh);
+	});
+		
+		
+	var cubeGeometry = new THREE.CubeGeometry( 1, 1, 1 );
+	var cubeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:true, opacity:1 } );
+	cube = new THREE.Mesh( cubeGeometry, cubeMaterial );
+	cube.position.set(0,2,0);
+	cube.castShadow = true;
+	cube.receiveShadow = true;
+	interactive.add(cube);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		// GUI=========================================================
+		
+		geometry = new THREE.PlaneGeometry 
+		(1500, 1500, widthSegments = 1, heightSegments = 1)
+		
+		material = new THREE.MeshLambertMaterial
+					( { color: "#6699FF" ,  side: THREE.DoubleSide  });
+		
+		plane = new THREE.Mesh (geometry, material);
+		
+		plane.position.y = -10;
+		plane.rotation.x = Math.PI / 2;
+		plane.receiveShadow = true;
+		scene.add (plane);
+	
+	runGUI();	
+	function runGUI(){		
+	var gui;
+	
+	gui= new dat.GUI();
+	
+	params = {
+		opacity: 1,
+		visible: true,
+		visibleGreenCube: true,
+	};
+	
+	var cubeOpacity = gui.add(params, 'opacity').min(0).max(1).step(0.01)		
+			cubeOpacity.onChange(function(value)
+	{   cube.material.opacity = value;   });
+	
+	var cubeVisible = gui.add( params, 'visible' ).name('BlackCube').listen();
+	cubeVisible.onChange(function(value) 
+	{   cube.visible = value;  	});
+	
+	var greenCubeVisible = gui.add( params, 'visibleGreenCube' ).name('GreenCube').listen();
+	greenCubeVisible.onChange(function(value) 
+	{   greenCube.visible = value;  	});
+
+}	
+
+
+	projector = new THREE.Projector();
+	
+	
+	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+	
+}	
+
+	function onDocumentMouseMove( event ) {
+	// the following line would stop any other event handler from firing
+	// (such as the mouse's TrackballControls)
+	// event.preventDefault();
+	
+	// update the mouse variable
+	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+	}
+
+	
+	
+	
+	function animate () {
+	
+			//Render
+	
+		requestAnimationFrame ( animate );
+		
+		cube1.rotation.x = Date.now() * 0.0005;
+		cube1.rotation.y = Date.now() * 0.002;
+		
+		cube2.rotation.x = Date.now() * 0.0005;
+		cube2.rotation.y = Date.now() * 0.002;
+		
+		cube3.rotation.x = Date.now() * 0.0005;
+		cube3.rotation.y = Date.now() * 0.002;
+		
+		cube4.rotation.x = Date.now() * 0.0005;
+		cube4.rotation.y = Date.now() * 0.002;
+		
+		cube4a.rotation.x = Date.now() * 0.0005;
+		cube4a.rotation.y = Date.now() * 0.002;
+		
+		cube4b.rotation.x = Date.now() * 0.0005;
+		cube4b.rotation.y = Date.now() * 0.002;
+		
+		cube5.rotation.x = Date.now() * 0.0005;
+		cube5.rotation.y = Date.now() * 0.002;
+		
+		cube6.rotation.x = Date.now() * 0.0005;
+		cube6.rotation.y = Date.now() * 0.002;
+		
+		cube7.rotation.x = Date.now() * 0.0005;
+		cube7.rotation.y = Date.now() * 0.002;
+		
+		
+		render();
+		update();
+		
+	}	
+	
+	
+	function update (){
+	
+	// find intersections
+
+	// create a Ray with origin at the mouse position
+	//   and direction into the scene (camera direction)
+	var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
+	projector.unprojectVector( vector, camera );
+	var ray = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+
+	// create an array containing all objects in the scene with which the ray intersects
+	var intersects = ray.intersectObjects( interactive.children );
+
+	// INTERSECTED = the object in the scene currently closest to the camera 
+	//		and intersected by the Ray projected from the mouse position 	
+	
+	// if there is one (or more) intersections
+	if ( intersects.length > 0 )
+	{
+		// if the closest object intersected is not the currently stored intersection object
+		if ( intersects[ 0 ].object != INTERSECTED ) 
+		{
+		    // restore previous intersection object (if it exists) to its original color
+			if ( INTERSECTED ) 
+				INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
+			// store reference to closest object as current intersection object
+			INTERSECTED = intersects[ 0 ].object;
+			// store color of closest object (for later restoration)
+			INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
+			// set a new color for closest object
+			INTERSECTED.material.color.setHex( 0xffff00 );
+			
+			//The links for the geometries
+			
+			document.addEventListener("dblclick", function(){
+			if (INTERSECTED === greenCube){
+            location.href = document.getElementById('bla').href;}
+			else if (INTERSECTED === cube){
+            location.href = document.getElementById('blubb').href;}
+    });
+			
+			
+			
+		}
+	} 
+	else // there are no intersections
+	{
+		// restore previous intersection object (if it exists) to its original color
+		if ( INTERSECTED ) 
+			INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
+		// remove previous intersection object reference
+		//     by setting current intersection object to "nothing"
+		INTERSECTED = null;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		keyboard.update();
+
+	var moveDistance = 50 * clock.getDelta(); 
+
+	if ( keyboard.down("left") ) 
+		cube3.translateX( -10 );
+		
+	if ( keyboard.down("right") ) 
+		cube3.translateX(  10 );
+
+	if ( keyboard.pressed("A") )
+		cube3.translateX( -moveDistance );
+		
+	if ( keyboard.pressed("D") )
+		cube3.translateX(  moveDistance );
+		
+	if ( keyboard.down("R") )
+		cube3.material.color = new THREE.Color(0xff0000);
+	if ( keyboard.up("R") )
+		cube3.material.color = new THREE.Color(0x0000ff);
+		
+	if ( keyboard.pressed("1") )
+	{
+		camera.position.set(0,25,0);
+		camera.rotation.set(0,0,0);
+	}
+
+	if ( keyboard.pressed("2") )
+	{
+		camera.position.set(10,25,0);
+		camera.rotation.set(0,0,0);
+	}
+	
+	
+	controls.update();
+	
+
+	
+
+	}	
+	
+	
+	function render (){
+	
+	renderer.render( scene, camera );
+	
+	}
+		
+		
+		</script>
+	</body>
+</html>
